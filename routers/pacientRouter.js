@@ -12,6 +12,12 @@ router.route('/login')
 router.route('/logout')
     .post(authController.logout)
 
+// BELLOW ROUTES ARE PROTECTED
+router.use(authController.protect)
+
+router.route('/me')
+    .get(pacientController.getLogedInPacient)
+
 router.route('/:id')
     .get(pacientController.getOnePacient)
 
