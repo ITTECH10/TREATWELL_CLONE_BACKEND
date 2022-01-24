@@ -1,7 +1,16 @@
 const mongoose = require('mongoose');
 
-const userSchema = new mongoose.Schema({
+const therapeutSchema = new mongoose.Schema({
     name: {
+        type: String
+    },
+    specializedServices: {
+        type: String
+    },
+    location: {
+        type: String
+    },
+    image: {
         type: String
     },
     email: {
@@ -21,11 +30,12 @@ const userSchema = new mongoose.Schema({
     specializedIn: {
         type: String
     },
-    specializedServices: {
-        type: String
+    available: {
+        type: Boolean,
+        default: true
     }
 })
 
-const User = mongoose.model('User', userSchema)
+const Therapeut = mongoose.model('Therapeut', therapeutSchema)
 
-module.exports = User
+module.exports = Therapeut

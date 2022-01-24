@@ -5,18 +5,25 @@ const therapySchema = new mongoose.Schema({
         type: String
     },
     category: {
-        type: mongoose.Schema.ObjectId,
-        required: [true, 'Therapie Muss eine Kategorie haben']
+        type: String
+    },
+    appointedAt: {
+        type: Date
     },
     therapeut: {
         type: mongoose.Schema.ObjectId,
         required: [true, 'Therapie Muss einem Therapeuten gehören']
     },
+    pacientWhichBooked: {
+        type: mongoose.Schema.ObjectId,
+        required: [true, 'Therapie Muss einem Pacienten gehören']
+    },
     price: {
         type: String
     },
     available: {
-        type: Boolean
+        type: Boolean,
+        default: true
     }
 })
 

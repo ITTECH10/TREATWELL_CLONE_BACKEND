@@ -8,7 +8,9 @@ const router = express.Router()
 router.use(authController.protect)
 
 router.route('/')
-    .post(therapyController.createTherapy)
     .get(therapyController.getAllTherapies)
+
+router.route('/:therapeutId')
+    .post(therapyController.createTherapy)
 
 module.exports = router

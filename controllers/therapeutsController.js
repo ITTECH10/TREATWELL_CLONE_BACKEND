@@ -29,17 +29,18 @@ exports.getOneTherapeut = catchAsync(async (req, res, next) => {
 })
 
 exports.createTherapeut = catchAsync(async (req, res, next) => {
-    const newTherapeut = await User.create({
+    const newTherapeut = await Therapeut.create({
         name: req.body.name,
         email: req.body.email,
         phone: req.body.phone,
         biography: req.body.biography,
         website: req.body.website,
         specializedIn: req.body.specializedIn,
-        specializedServices: req.body.specializedServices
+        specializedServices: req.body.specializedServices,
+        location: req.body.location,
     })
 
-    res.status(200).json({
+    res.status(201).json({
         message: 'success',
         newTherapeut
     })
