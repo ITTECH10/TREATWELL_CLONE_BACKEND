@@ -7,7 +7,7 @@ const therapyRouter = require('./routers/therapyRouter')
 const therapeutRouter = require('./routers/therapeutRouter')
 const pacientRouter = require('./routers/pacientRouter')
 
-const origin = process.env.NODE_ENV === 'production' ? 'https://treatwell-clone-58p8v9ghs-ittech10.vercel.app' : 'http://localhost:3000'
+const origin = process.env.NODE_ENV === 'production' ? 'https://treatwell-clone.vercel.app' : 'http://localhost:3000'
 
 // CORS
 app.use(cors({ credentials: true, origin }))
