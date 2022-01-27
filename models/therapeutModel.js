@@ -13,6 +13,9 @@ const therapeutSchema = new mongoose.Schema({
     image: {
         type: String
     },
+    images: {
+        type: Array
+    },
     email: {
         type: String,
         unique: true

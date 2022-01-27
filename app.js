@@ -1,7 +1,9 @@
 const express = require('express')
 const app = express()
+const os = require('os')
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
+const fileupload = require('express-fileupload')
 const AppError = require('./utils/appError')
 const therapyRouter = require('./routers/therapyRouter')
 const therapeutRouter = require('./routers/therapeutRouter')
@@ -16,6 +18,10 @@ app.use(cors({ credentials: true, origin }))
 app.use(cookieParser())
 
 app.use(express.json())
+app.use(fileupload({
+    useTempFiles: true,
+    tempFileDir: os.tmpdir()
+}));
 
 // ROUTES
 app.use('/api/v1/therapies', therapyRouter)
