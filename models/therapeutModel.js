@@ -10,6 +10,15 @@ const therapeutSchema = new mongoose.Schema({
     location: {
         type: String
     },
+    locationCoordinates: {
+        // GeoJSON
+        type: {
+            type: String,
+            default: 'Point',
+            enum: ['Point']
+        },
+        coordinates: [Number]
+    },
     image: {
         type: String
     },
@@ -24,7 +33,13 @@ const therapeutSchema = new mongoose.Schema({
         type: String,
         default: '0049-152-901820'
     },
+    address: {
+        type: String
+    },
     biography: {
+        type: String
+    },
+    qualifications: {
         type: String
     },
     website: {

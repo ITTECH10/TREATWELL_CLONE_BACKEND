@@ -71,13 +71,21 @@ exports.createTherapeut = catchAsync(async (req, res, next) => {
         name: req.body.name,
         email: req.body.email,
         phone: req.body.phone,
+        address: req.body.address,
+        qualifications: req.body.qualifications,
         biography: req.body.biography,
         website: req.body.website,
         specializedIn: req.body.specializedIn,
         specializedServices: req.body.specializedServices,
         location: req.body.location,
         image: req.files && req.files.image ? req.files.image : req.body.image,
-        images: req.files && req.files.bulk ? req.files.bulk : req.body.bulk
+        images: req.files && req.files.bulk ? req.files.bulk : req.body.bulk,
+        locationCoordinates: {
+            coordinates: [req.body.longitude, req.body.latitude]
+        }
+        // locationCoordinates: {
+        //     coordinates: [8.239761, 50.078217]
+        // }
     })
 
     res.status(201).json({
@@ -85,3 +93,31 @@ exports.createTherapeut = catchAsync(async (req, res, next) => {
         newTherapeut
     })
 })
+
+// /tours-within/:distance/center/:latlng/unit/:unit
+// /tours-within/233/center/34.111745,-118.113491/unit/mi
+exports.getTherapeutsWithin = catchAsync(async (req, res, next) => {
+    const { distance, latlng, unit } = req.params;
+    const [lat, lng] = latlng.split(',');
+
+    const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.1;
+
+    if (!lat || !lng) {
+        next(
+            new AppError(
+                'Please provide latitute and longitude in the format lat,lng.',
+                400
+            )
+        );
+    }
+
+    const therapeuts = await Therapeut.find({
+        locationCoordinates: { $geoWithin: { $centerSphere: [[8.239761, 50.078217], radius] } }
+    });
+
+    res.status(200).json({
+        status: 'success',
+        results: therapeuts.length,
+        therapeuts
+    });
+});

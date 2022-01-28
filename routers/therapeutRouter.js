@@ -13,6 +13,10 @@ router.route('/')
         therapeutsController.createTherapeut
     )
 
+router
+    .route('/therapeuts-within/distance/:distance/center/:latlng/unit/:unit')
+    .get(therapeutsController.getTherapeutsWithin);
+
 router.route('/:id')
     .get(therapeutsController.getOneTherapeut)
 
