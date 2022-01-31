@@ -4,6 +4,9 @@ const therapeutSchema = new mongoose.Schema({
     name: {
         type: String
     },
+    age: {
+        type: Number
+    },
     specializedServices: {
         type: String
     },
@@ -48,9 +51,23 @@ const therapeutSchema = new mongoose.Schema({
     specializedIn: {
         type: String
     },
+    ratingsQuantity: {
+        type: Number,
+        default: 0
+    },
+    ratingsAverage: {
+        type: Number,
+        default: 0,
+        min: [1, 'Rating must be above 1.0'],
+        max: [5, 'Rating must be below 5.0'],
+        set: val => Math.round(val * 10) / 10 // 4.666666, 46.6666, 47, 4.7
+    },
     available: {
         type: Boolean,
         default: true
+    },
+    availableBookingDates: {
+        type: Array
     }
 })
 

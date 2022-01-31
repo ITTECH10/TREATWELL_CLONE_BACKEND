@@ -110,8 +110,8 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     }
 
     const resetToken = pacient.createPasswordResetToken()
-    const resetURL = `${req.protocol}://localhost:3000/resetPassword/${resetToken}`;
-    // const resetURL = `https://treatwell-clone.vercel.app/resetPassword/${resetToken}`
+    // const resetURL = `${req.protocol}://localhost:3000/resetPassword/${resetToken}`;
+    const resetURL = `https://treatwell-clone.vercel.app/resetPassword/${resetToken}`
 
     await pacient.save({ validateBeforeSave: false })
 

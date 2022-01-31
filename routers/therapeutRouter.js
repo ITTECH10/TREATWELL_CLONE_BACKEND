@@ -1,8 +1,11 @@
 const express = require('express');
 const authController = require('../controllers/authController')
 const therapeutsController = require('../controllers/therapeutsController')
+const reviewRouter = require('./reviewRouter')
 
 const router = express.Router()
+
+router.use('/:therapeutId/reviews', reviewRouter);
 
 router.route('/')
     .get(therapeutsController.getAllTherapeuts)

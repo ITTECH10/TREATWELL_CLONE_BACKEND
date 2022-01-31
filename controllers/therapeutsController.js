@@ -69,6 +69,8 @@ exports.getOneTherapeut = catchAsync(async (req, res, next) => {
 exports.createTherapeut = catchAsync(async (req, res, next) => {
     const newTherapeut = await Therapeut.create({
         name: req.body.name,
+        age: req.body.age,
+        availableBookingDates: req.body.availableBookingDates,
         email: req.body.email,
         phone: req.body.phone,
         address: req.body.address,

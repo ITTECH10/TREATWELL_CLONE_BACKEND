@@ -36,6 +36,21 @@ const pacientSchema = new mongoose.Schema({
         },
         default: 'pacient'
     }
+}, {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+})
+
+// CONSIDER LATER
+pacientSchema.virtual('therapies', {
+    ref: 'Therapy',
+    foreignField: 'pacientWhichBooked',
+    localField: '_id'
+});
+
+pacientSchema.pre(/^find/, function (next) {
+    this.populate('therapies')
+    next()
 })
 
 pacientSchema.pre('save', async function (next) {
@@ -57,7 +72,6 @@ pacientSchema.methods.createPasswordResetToken = function () {
 
     return plainToken;
 };
-
 
 const Pacient = mongoose.model('Pacient', pacientSchema)
 

@@ -49,3 +49,16 @@ exports.getAllTherapies = catchAsync(async (req, res, next) => {
         therapies
     })
 })
+
+exports.getMyTherapies = catchAsync(async (req, res, next) => {
+    const myTherapies = await Therapiy.find({ pacientWhichBooked: req.user._id })
+
+    if (!myTherapies) {
+        return next(new AppError('Es wurden keine therapien gefunden.', 404))
+    }
+
+    res.status(200).json({
+        message: 'success',
+        myTherapies
+    })
+})
