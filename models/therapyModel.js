@@ -12,12 +12,12 @@ const therapySchema = new mongoose.Schema({
     },
     therapeut: {
         type: mongoose.Schema.ObjectId,
-        ref: 'Therapeut',
+        ref: 'User',
         required: [true, 'Therapie Muss einem Therapeuten gehören']
     },
-    pacientWhichBooked: {
+    pacientId: {
         type: mongoose.Schema.ObjectId,
-        ref: 'Pacient',
+        ref: 'User',
         required: [true, 'Therapie Muss einem Pacienten gehören']
     },
     price: {
@@ -30,7 +30,7 @@ const therapySchema = new mongoose.Schema({
 })
 
 // therapySchema.pre(/^find/, function (next) {
-//     this.populate('pacientWhichBooked', 'firstName lastName -_id')
+//     this.populate('pacientId', 'firstName lastName -_id')
 //     next()
 // })
 

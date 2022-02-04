@@ -1,8 +1,10 @@
 const catchAsync = require('../utils/catchAsync')
 const AppError = require('../utils/appError')
 const Therapeut = require('../models/therapeutModel')
+const User = require('../models/userModel')
 const cloudinary = require('cloudinary').v2
 const { uploadFiles, uploadMultipleFiles } = require('./../utils/cloudinary')
+const TherapeutEmail = require('../utils/Emails/TherapeutRelated')
 
 // MIDLEWARE FOR FILES 
 exports.checkForFiles = catchAsync(async (req, res, next) => {
@@ -41,10 +43,10 @@ exports.checkForFiles = catchAsync(async (req, res, next) => {
 })
 
 exports.getAllTherapeuts = catchAsync(async (req, res, next) => {
-    const therapeuts = await Therapeut.find()
+    const therapeuts = await User.find({ role: 'therapeut' })
 
     if (!therapeuts) {
-        return next(new AppError('Keine therapeuts sind gefunden.', 404))
+        return next(new AppError('Es gibt keine results.', 404))
     }
 
     res.status(200).json({
@@ -54,7 +56,7 @@ exports.getAllTherapeuts = catchAsync(async (req, res, next) => {
 })
 
 exports.getOneTherapeut = catchAsync(async (req, res, next) => {
-    const therapeut = await Therapeut.findOne({ _id: req.params.id })
+    const therapeut = await User.findOne({ _id: req.params.id })
 
     if (!therapeut) {
         return next(new AppError('Kein therapeut gefunden.', 404))
@@ -68,10 +70,12 @@ exports.getOneTherapeut = catchAsync(async (req, res, next) => {
 
 exports.createTherapeut = catchAsync(async (req, res, next) => {
     const newTherapeut = await Therapeut.create({
-        name: req.body.name,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
         age: req.body.age,
         availableBookingDates: req.body.availableBookingDates,
         email: req.body.email,
+        password: req.body.password,
         phone: req.body.phone,
         address: req.body.address,
         qualifications: req.body.qualifications,
@@ -85,10 +89,16 @@ exports.createTherapeut = catchAsync(async (req, res, next) => {
         locationCoordinates: {
             coordinates: [req.body.longitude, req.body.latitude]
         }
-        // locationCoordinates: {
-        //     coordinates: [8.239761, 50.078217]
-        // }
     })
+
+    // const URL = `https://treatwell-clone.vercel.app/resetPassword/${resetToken}`
+    const URL = `${req.protocol}://localhost:3000/authenticate/therapeuts`;
+
+    try {
+        await new TherapeutEmail().welcomeGreetings(newTherapeut, URL, req.body.password)
+    } catch (err) {
+        if (err) console.log(err)
+    }
 
     res.status(201).json({
         message: 'success',
@@ -123,3 +133,19 @@ exports.getTherapeutsWithin = catchAsync(async (req, res, next) => {
         therapeuts
     });
 });
+
+exports.updateTherapeut = catchAsync(async (req, res, next) => {
+    const therapeut = await User.findOne({ _id: req.user._id })
+
+    if (!therapeut) {
+        return next(new AppError('Kein therapeut gefunden', 404))
+    }
+
+    therapeut.availableBookingDates = req.body.availableBookingDates
+    therapeut.save({ validateBeforeSave: false })
+
+    res.status(200).json({
+        message: 'success',
+        therapeut
+    })
+})

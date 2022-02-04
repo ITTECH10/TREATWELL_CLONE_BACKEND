@@ -9,6 +9,7 @@ const therapyRouter = require('./routers/therapyRouter')
 const therapeutRouter = require('./routers/therapeutRouter')
 const pacientRouter = require('./routers/pacientRouter')
 const reviewRouter = require('./routers/reviewRouter')
+const userRouter = require('./routers/userRouter')
 
 const origin = process.env.NODE_ENV === 'production' ? 'https://treatwell-clone.vercel.app' : 'http://localhost:3000'
 
@@ -28,6 +29,7 @@ app.use(fileupload({
 app.use('/api/v1/therapies', therapyRouter)
 app.use('/api/v1/therapeuts', therapeutRouter)
 app.use('/api/v1/pacients', pacientRouter)
+app.use('/api/v1/users', userRouter)
 app.use('/api/v1/reviews', reviewRouter)
 
 app.all('*', (req, res, next) => {

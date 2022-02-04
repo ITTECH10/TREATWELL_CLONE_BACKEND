@@ -1,5 +1,5 @@
 const express = require('express');
-const pacientController = require('../controllers/pacientController')
+const userController = require('../controllers/userController')
 const authController = require('../controllers/authController')
 
 const router = express.Router()
@@ -10,8 +10,7 @@ router.route('/login')
     .post(authController.login)
 
 router.route('/')
-    .get(pacientController.getAllPacients)
-    .post(authController.protect, authController.createTherapeut)
+    .get(userController.getAllUsers)
 
 router.route('/forgotPassword')
     .post(authController.forgotPassword)
@@ -25,7 +24,10 @@ router.route('/logout')
 // BELLOW ROUTES ARE PROTECTED
 router.use(authController.protect)
 
+router.route('/me')
+    .get(authController.getLogedInUser)
+
 router.route('/:id')
-    .get(pacientController.getOnePacient)
+    .get(userController.getOneUser)
 
 module.exports = router

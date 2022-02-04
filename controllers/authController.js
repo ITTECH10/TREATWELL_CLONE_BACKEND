@@ -1,14 +1,15 @@
 const catchAsync = require('../utils/catchAsync')
 const AppError = require('../utils/appError')
-const Pacient = require('../models/pacientModel')
+const User = require('../models/userModel')
 const PacientEmail = require('../utils/Emails/PacientRelated')
+const TherapeutEmail = require('../utils/Emails/TherapeutRelated')
 const createSendToken = require('../utils/signToken')
 const { promisify } = require('util')
 const jwt = require('jsonwebtoken')
 const crypto = require('crypto')
 
 exports.signup = catchAsync(async (req, res, next) => {
-    const newPacient = await Pacient.create({
+    await User.create({
         firstName: req.body.firstName,
         lastName: req.body.lastName,
         email: req.body.email,
@@ -17,8 +18,44 @@ exports.signup = catchAsync(async (req, res, next) => {
     })
 
     res.status(201).json({
+        message: 'success'
+    })
+})
+
+exports.createTherapeut = catchAsync(async (req, res, next) => {
+    const newTherapeut = await User.create({
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        role: 'therapeut',
+        age: req.body.age,
+        availableBookingDates: req.body.availableBookingDates,
+        email: req.body.email,
+        password: req.body.password,
+        confirmPassword: req.body.confirmPassword,
+        phone: req.body.phone,
+        address: req.body.address,
+        qualifications: req.body.qualifications,
+        biography: req.body.biography,
+        website: req.body.website,
+        specializedIn: req.body.specializedIn,
+        specializedServices: req.body.specializedServices,
+        location: req.body.location,
+        image: req.files && req.files.image ? req.files.image : req.body.image,
+        images: req.files && req.files.bulk ? req.files.bulk : req.body.bulk,
+        locationCoordinates: {
+            coordinates: [req.body.longitude, req.body.latitude]
+        }
+    })
+
+    try {
+        await new TherapeutEmail().welcomeGreetings(newTherapeut, req.body.password)
+    } catch (err) {
+        if (err) console.log(err)
+    }
+
+    res.status(201).json({
         message: 'success',
-        newPacient
+        newTherapeut
     })
 })
 
@@ -29,13 +66,12 @@ exports.login = catchAsync(async (req, res, next) => {
         return next(new AppError('Molimo vas unesite e-mail i password.', 400))
     }
 
-    const pacient = await Pacient.findOne({ email }).select('+password')
-
-    if (!pacient || !await pacient.comparePasswords(password, pacient.password)) {
+    const user = await User.findOne({ email }).select('+password')
+    if (!user || !await user.comparePasswords(password, user.password)) {
         return next(new AppError('Netačan e-mail ili lozinka.', 401))
     }
 
-    createSendToken(pacient, 200, res)
+    createSendToken(user, 200, res)
 })
 
 exports.logout = catchAsync(async (req, res, next) => {
@@ -80,13 +116,13 @@ exports.protect = catchAsync(async (req, res, next) => {
     }
 
     const decodedToken = await promisify(jwt.verify)(token, process.env.JWT_SECRET)
-    const currentPacient = await Pacient.findById(decodedToken.id)
+    const currentUser = await User.findById(decodedToken.id)
 
-    if (!currentPacient) {
+    if (!currentUser) {
         return next(new AppError('Benutzer, der diesem Token zugeordnet ist, existiert nicht.', 404))
     }
 
-    req.user = currentPacient
+    req.user = currentUser
     next()
 })
 
@@ -103,30 +139,30 @@ exports.restrictTo = (...roles) => {
 }
 
 exports.forgotPassword = catchAsync(async (req, res, next) => {
-    const pacient = await Pacient.findOne({ email: req.body.email })
+    const user = await User.findOne({ email: req.body.email })
 
-    if (!pacient) {
+    if (!user) {
         return next(new AppError('Dieser E-Mail-Adresse ist kein Patient zugeordnet.', 404))
     }
 
-    const resetToken = pacient.createPasswordResetToken()
+    const resetToken = user.createPasswordResetToken()
     // const resetURL = `${req.protocol}://localhost:3000/resetPassword/${resetToken}`;
     const resetURL = `https://treatwell-clone.vercel.app/resetPassword/${resetToken}`
 
-    await pacient.save({ validateBeforeSave: false })
+    await user.save({ validateBeforeSave: false })
 
     try {
         // SEND EMAIL HERE
-        await new PacientEmail().resetPassword(pacient, resetURL)
+        await new PacientEmail().resetPassword(user, resetURL)
 
         res.status(200).json({
             message: 'success'
         })
 
     } catch (err) {
-        pacient.passwordResetToken = undefined;
-        pacient.passwordResetTokenExpiresIn = undefined;
-        await pacient.save({ validateBeforeSave: false })
+        user.passwordResetToken = undefined;
+        user.passwordResetTokenExpiresIn = undefined;
+        await user.save({ validateBeforeSave: false })
 
         return next(new AppError('Beim Senden der E-Mail ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.', 500))
     }
@@ -135,23 +171,23 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 exports.resetPassword = catchAsync(async (req, res, next) => {
     const encryptedToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
 
-    const pacient = await Pacient.findOne({
+    const user = await User.findOne({
         passwordResetToken: encryptedToken,
         passwordResetTokenExpiresIn: { $gt: Date.now() }
     });
 
-    if (!pacient) {
+    if (!user) {
         return next(new AppError('Das Token ist abgelaufen oder ungültig.', 400));
     }
 
-    pacient.password = req.body.password;
-    pacient.confirmPassword = req.body.confirmPassword;
-    pacient.passwordResetToken = undefined;
-    pacient.passwordResetTokenExpiresIn = undefined;
+    user.password = req.body.password;
+    user.confirmPassword = req.body.confirmPassword;
+    user.passwordResetToken = undefined;
+    user.passwordResetTokenExpiresIn = undefined;
 
-    await pacient.save({ validateBeforeSave: false });
+    await user.save({ validateBeforeSave: false });
 
-    createSendToken(pacient, 200, res)
+    createSendToken(user, 200, res)
 });
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
@@ -170,3 +206,16 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
     // 4) Log user in, send JWT
     createSendToken(employee, 200, res);
 });
+
+exports.getLogedInUser = catchAsync(async (req, res, next) => {
+    const user = await User.findOne({ _id: req.user._id })
+
+    if (!user) {
+        return next(new AppError('Ihr Konto wurde nicht gefunden.', 404))
+    }
+
+    res.status(200).json({
+        message: 'success',
+        user
+    })
+})

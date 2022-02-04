@@ -13,8 +13,18 @@ router.route('/')
         authController.protect,
         authController.restrictTo('admin'),
         therapeutsController.checkForFiles,
-        therapeutsController.createTherapeut
+        authController.createTherapeut
     )
+
+router.route('/update')
+    .put(
+        authController.protect,
+        authController.restrictTo('therapeut'),
+        therapeutsController.updateTherapeut
+    )
+
+// router.route('/me')
+//     .get(authController.protect, authController.getLogedInUser)
 
 router
     .route('/therapeuts-within/distance/:distance/center/:latlng/unit/:unit')
