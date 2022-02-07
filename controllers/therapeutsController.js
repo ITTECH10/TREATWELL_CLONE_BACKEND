@@ -1,10 +1,13 @@
 const catchAsync = require('../utils/catchAsync')
 const AppError = require('../utils/appError')
 const Therapeut = require('../models/therapeutModel')
+const Therapy = require('../models/therapyModel')
 const User = require('../models/userModel')
 const cloudinary = require('cloudinary').v2
 const { uploadFiles, uploadMultipleFiles } = require('./../utils/cloudinary')
 const TherapeutEmail = require('../utils/Emails/TherapeutRelated')
+const ClientEmail = require('../utils/Emails/ClientRelated')
+const PacientEmail = require('../utils/Emails/PacientRelated')
 
 // MIDLEWARE FOR FILES 
 exports.checkForFiles = catchAsync(async (req, res, next) => {
@@ -147,5 +150,41 @@ exports.updateTherapeut = catchAsync(async (req, res, next) => {
     res.status(200).json({
         message: 'success',
         therapeut
+    })
+})
+
+exports.updateTherapeutInfo = catchAsync(async (req, res, next) => {
+    const therapeut = await User.findOne({ _id: req.params.id })
+
+    if (!therapeut) {
+        return next(new AppError('Kein therapeut gefunden', 404))
+    }
+
+    const newTherapy = await Therapy.create({
+        name: req.body.name,
+        category: req.body.category,
+        therapeut: req.params.id,
+        pacientId: req.user._id,
+        price: req.body.price,
+        appointedAt: req.body.appointedAt
+    })
+
+    try {
+        therapeut.availableBookingDates = req.body.availableBookingDates
+        therapeut.save({ validateBeforeSave: false })
+
+        await new ClientEmail().therapyBooked(req.user, therapeut)
+        await new TherapeutEmail().therapyBooked(req.user, therapeut)
+        await new PacientEmail().therapyBooked(req.user, therapeut)
+    } catch (e) {
+        if (e) {
+            console.log(e)
+        }
+    }
+
+    res.status(200).json({
+        message: 'success',
+        therapeut,
+        newTherapy
     })
 })

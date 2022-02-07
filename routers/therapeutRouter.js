@@ -32,5 +32,6 @@ router
 
 router.route('/:id')
     .get(therapeutsController.getOneTherapeut)
+    .put(authController.protect, therapeutsController.updateTherapeutInfo)
 
 module.exports = router
