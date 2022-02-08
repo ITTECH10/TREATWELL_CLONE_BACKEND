@@ -35,7 +35,7 @@ const therapySchema = new mongoose.Schema({
 // })
 
 therapySchema.pre(/^find/, function (next) {
-    this.populate('therapeut', 'name image ratingsAverage location website address phone specializedIn _id')
+    this.populate('therapeut', 'firstName lastName image ratingsAverage ratingsQuantity location website address phone specializedIn _id')
     next()
 })
 

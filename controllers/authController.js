@@ -9,7 +9,7 @@ const jwt = require('jsonwebtoken')
 const crypto = require('crypto')
 
 exports.signup = catchAsync(async (req, res, next) => {
-    await User.create({
+    const newUser = await User.create({
         firstName: req.body.firstName,
         lastName: req.body.lastName,
         email: req.body.email,
@@ -17,9 +17,7 @@ exports.signup = catchAsync(async (req, res, next) => {
         confirmPassword: req.body.confirmPassword
     })
 
-    res.status(201).json({
-        message: 'success'
-    })
+    createSendToken(newUser, 201, res)
 })
 
 exports.createTherapeut = catchAsync(async (req, res, next) => {
@@ -209,6 +207,8 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 
 exports.getLogedInUser = catchAsync(async (req, res, next) => {
     const user = await User.findOne({ _id: req.user._id })
+        // .populate('reviews', 'rating review pacient -therapeut')
+        .populate('therapies')
 
     if (!user) {
         return next(new AppError('Ihr Konto wurde nicht gefunden.', 404))

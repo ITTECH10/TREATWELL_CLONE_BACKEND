@@ -1,6 +1,6 @@
 // review / rating / createdAt / ref to tour / ref to user
 const mongoose = require('mongoose');
-const Therapeut = require('./therapeutModel');
+const User = require('./userModel');
 
 const reviewSchema = new mongoose.Schema(
     {
@@ -19,13 +19,15 @@ const reviewSchema = new mongoose.Schema(
         },
         therapeut: {
             type: mongoose.Schema.ObjectId,
-            ref: 'Therapeut',
-            required: [true, 'Review must belong to a therapeut.']
+            ref: 'User',
+            required: [true, 'Review must belong to a therapeut.'],
+            select: false
         },
         pacient: {
             type: mongoose.Schema.ObjectId,
-            ref: 'Pacient',
-            required: [true, 'Review must belong to a pacient']
+            ref: 'User',
+            required: [true, 'Review must belong to a pacient'],
+            select: false
         }
     },
     {
@@ -39,7 +41,7 @@ reviewSchema.index({ therapeut: 1, pacient: 1 }, { unique: true });
 reviewSchema.pre(/^find/, function (next) {
     this.populate({
         path: 'pacient',
-        select: 'name'
+        select: 'firstName lastName -_id'
     });
     next();
 });
@@ -59,12 +61,12 @@ reviewSchema.statics.calcAverageRatings = async function (therapeutId) {
     ]);
 
     if (stats.length > 0) {
-        await Therapeut.findByIdAndUpdate(therapeutId, {
+        await User.findByIdAndUpdate(therapeutId, {
             ratingsQuantity: stats[0].nRating,
             ratingsAverage: stats[0].avgRating
         });
     } else {
-        await Therapeut.findByIdAndUpdate(therapeutId, {
+        await User.findByIdAndUpdate(therapeutId, {
             ratingsQuantity: 0,
             ratingsAverage: 0
         });

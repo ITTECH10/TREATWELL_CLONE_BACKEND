@@ -108,10 +108,17 @@ userSchema.virtual('therapies', {
     localField: '_id'
 });
 
-userSchema.pre(/^find/, function (next) {
-    this.populate({ path: 'therapies', select: '-_id' })
-    next()
-})
+userSchema.virtual('reviews', {
+    ref: 'Review',
+    foreignField: 'therapeut',
+    localField: '_id'
+});
+
+// userSchema.pre(/^find/, function (next) {
+//     this.populate({ path: 'therapies', select: '-_id' })
+//     // this.populate({ path: 'reviews' })
+//     next()
+// })
 
 userSchema.pre('save', async function (next) {
     if (!this.isModified('password')) return

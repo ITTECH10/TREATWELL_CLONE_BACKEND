@@ -60,6 +60,8 @@ exports.getAllTherapeuts = catchAsync(async (req, res, next) => {
 
 exports.getOneTherapeut = catchAsync(async (req, res, next) => {
     const therapeut = await User.findOne({ _id: req.params.id })
+        .populate('reviews', 'rating review pacient -therapeut')
+
 
     if (!therapeut) {
         return next(new AppError('Kein therapeut gefunden.', 404))
