@@ -190,3 +190,14 @@ exports.updateTherapeutInfo = catchAsync(async (req, res, next) => {
         newTherapy
     })
 })
+
+exports.becomePartner = catchAsync(async (req, res, next) => {
+    try {
+        await new ClientEmail().becomePartner(req.body.therapeut)
+        res.status(200).json({
+            message: 'success'
+        })
+    } catch (e) {
+        if (e) console.log(e)
+    }
+})

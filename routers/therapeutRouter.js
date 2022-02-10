@@ -23,6 +23,9 @@ router.route('/update')
         therapeutsController.updateTherapeut
     )
 
+router.route('/become-partner')
+    .post(therapeutsController.becomePartner)
+
 // router.route('/me')
 //     .get(authController.protect, authController.getLogedInUser)
 
