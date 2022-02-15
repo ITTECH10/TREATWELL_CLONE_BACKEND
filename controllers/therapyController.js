@@ -1,5 +1,6 @@
 const catchAsync = require('../utils/catchAsync')
 const AppError = require('../utils/appError')
+const User = require('../models/userModel')
 const Therapy = require('../models/therapyModel')
 const Therapeut = require('../models/therapeutModel')
 const ClientEmail = require('../utils/Emails/ClientRelated')
@@ -12,7 +13,7 @@ exports.createTherapy = catchAsync(async (req, res, next) => {
         name: req.body.name,
         category: req.body.category,
         therapeut: req.params.therapeutId,
-        pacientWhichBooked: req.user._id,
+        pacientId: req.user._id,
         price: req.body.price,
         appointedAt: req.body.date
     })
@@ -22,9 +23,9 @@ exports.createTherapy = catchAsync(async (req, res, next) => {
     }
 
     try {
-        await new ClientEmail().therapyBooked(req.user, therapeut)
-        await new TherapeutEmail().therapyBooked(req.user, therapeut)
-        await new PacientEmail().therapyBooked(req.user, therapeut)
+        // await new ClientEmail().therapyBooked(req.user, therapeut)
+        // await new TherapeutEmail().therapyBooked(req.user, therapeut)
+        // await new PacientEmail().therapyBooked(req.user, therapeut)
     } catch (e) {
         if (e) {
             console.log(e)
@@ -34,6 +35,30 @@ exports.createTherapy = catchAsync(async (req, res, next) => {
     res.status(201).json({
         message: 'success',
         newTherapy
+    })
+})
+
+exports.cancelTherapy = catchAsync(async (req, res, next) => {
+    const therapeut = await User.findOne({ _id: req.body.therapeutId })
+
+    if (!therapeut) {
+        return next(new AppError('Kein therapeut gefunden', 404))
+    }
+
+    await Therapy.findByIdAndDelete(req.params.therapyId)
+
+    try {
+        therapeut.availableBookingDates = req.body.availableBookingDates
+        therapeut.save({ validateBeforeSave: false })
+    } catch (e) {
+        if (e) {
+            console.log(e)
+        }
+    }
+
+    res.status(200).json({
+        message: 'success',
+        therapeut
     })
 })
 

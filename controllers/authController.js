@@ -46,7 +46,7 @@ exports.createTherapeut = catchAsync(async (req, res, next) => {
     })
 
     try {
-        await new TherapeutEmail().welcomeGreetings(newTherapeut, req.body.password)
+        // await new TherapeutEmail().welcomeGreetings(newTherapeut, req.body.password)
     } catch (err) {
         if (err) console.log(err)
     }
@@ -151,7 +151,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 
     try {
         // SEND EMAIL HERE
-        await new PacientEmail().resetPassword(user, resetURL)
+        // await new PacientEmail().resetPassword(user, resetURL)
 
         res.status(200).json({
             message: 'success'

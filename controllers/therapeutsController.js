@@ -100,7 +100,7 @@ exports.createTherapeut = catchAsync(async (req, res, next) => {
     const URL = `${req.protocol}://localhost:3000/authenticate/therapeuts`;
 
     try {
-        await new TherapeutEmail().welcomeGreetings(newTherapeut, URL, req.body.password)
+        // await new TherapeutEmail().welcomeGreetings(newTherapeut, URL, req.body.password)
     } catch (err) {
         if (err) console.log(err)
     }
@@ -175,9 +175,9 @@ exports.updateTherapeutInfo = catchAsync(async (req, res, next) => {
         therapeut.availableBookingDates = req.body.availableBookingDates
         therapeut.save({ validateBeforeSave: false })
 
-        await new ClientEmail().therapyBooked(req.user, therapeut)
-        await new TherapeutEmail().therapyBooked(req.user, therapeut)
-        await new PacientEmail().therapyBooked(req.user, therapeut)
+        // await new ClientEmail().therapyBooked(req.user, therapeut)
+        // await new TherapeutEmail().therapyBooked(req.user, therapeut)
+        // await new PacientEmail().therapyBooked(req.user, therapeut)
     } catch (e) {
         if (e) {
             console.log(e)
@@ -193,7 +193,7 @@ exports.updateTherapeutInfo = catchAsync(async (req, res, next) => {
 
 exports.becomePartner = catchAsync(async (req, res, next) => {
     try {
-        await new ClientEmail().becomePartner(req.body.therapeut)
+        // await new ClientEmail().becomePartner(req.body.therapeut)
         res.status(200).json({
             message: 'success'
         })

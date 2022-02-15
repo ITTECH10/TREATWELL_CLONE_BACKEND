@@ -10,6 +10,9 @@ router.use(authController.protect)
 router.route('/')
     .get(therapyController.getAllTherapies)
 
+router.route('/cancel-therapy/:therapyId')
+    .put(therapyController.cancelTherapy)
+
 router.route('/:therapeutId')
     .post(therapyController.createTherapy)
 
