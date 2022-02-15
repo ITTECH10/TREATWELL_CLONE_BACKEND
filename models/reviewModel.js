@@ -21,13 +21,13 @@ const reviewSchema = new mongoose.Schema(
             type: mongoose.Schema.ObjectId,
             ref: 'User',
             required: [true, 'Review must belong to a therapeut.'],
-            select: false
+            // select: false
         },
         pacient: {
             type: mongoose.Schema.ObjectId,
             ref: 'User',
             required: [true, 'Review must belong to a pacient'],
-            select: false
+            // select: false
         }
     },
     {

@@ -208,7 +208,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 exports.getLogedInUser = catchAsync(async (req, res, next) => {
     const user = await User.findOne({ _id: req.user._id })
         // .populate('reviews', 'rating review pacient -therapeut')
-        .populate('therapies')
+        .populate('therapies', 'therapeut appointedAt -pacientId')
 
     if (!user) {
         return next(new AppError('Ihr Konto wurde nicht gefunden.', 404))
