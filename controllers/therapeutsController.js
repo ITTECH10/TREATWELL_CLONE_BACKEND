@@ -146,8 +146,45 @@ exports.updateTherapeut = catchAsync(async (req, res, next) => {
         return next(new AppError('Kein therapeut gefunden', 404))
     }
 
-    therapeut.availableBookingDates = req.body.availableBookingDates
-    therapeut.save({ validateBeforeSave: false })
+    try {
+        therapeut.availableBookingDates = req.body.availableBookingDates
+
+        if (req.files) {
+            // Check for single file
+            if (req.files.photo) {
+                const publicId = therapeut.image.split('/')[7].split('.')[0]
+                therapeut.image = req.files.image || therapeut.image
+
+                await cloudinary.api.delete_resources(publicId, { invalidate: true },
+                    function (error, result) {
+                        if (error) {
+                            console.log(error)
+                        }
+                    });
+            }
+
+            // Check for multiple files
+            if (req.files.multiplePhotos) {
+                therapeut.images.forEach(async image => {
+                    const publicId = image.split('/')[7].split('.')[0]
+                    therapeut.images = req.files.bulk || therapeut.images
+
+                    await cloudinary.api.delete_resources(publicId, { invalidate: true },
+                        function (error, result) {
+                            if (error) {
+                                console.log(error)
+                            }
+                        });
+                })
+            }
+        }
+
+        therapeut.save({ validateBeforeSave: false })
+    } catch (e) {
+        if (e) {
+            console.log(e)
+        }
+    }
 
     res.status(200).json({
         message: 'success',
