@@ -37,6 +37,7 @@ exports.createTherapeut = catchAsync(async (req, res, next) => {
         website: req.body.website,
         specializedIn: req.body.specializedIn,
         specializedServices: req.body.specializedServices,
+        specializedMethods: req.body.specializedMethods,
         location: req.body.location,
         image: req.files && req.files.image ? req.files.image : req.body.image,
         images: req.files && req.files.bulk ? req.files.bulk : req.body.bulk,

@@ -42,6 +42,9 @@ const userSchema = new mongoose.Schema({
     specializedServices: {
         type: String
     },
+    specializedMethods: {
+        type: Array
+    },
     location: {
         type: String
     },
