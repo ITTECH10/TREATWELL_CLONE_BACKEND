@@ -46,7 +46,7 @@ exports.createTherapeut = catchAsync(async (req, res, next) => {
     })
 
     try {
-        // await new TherapeutEmail().welcomeGreetings(newTherapeut, req.body.password)
+        await new TherapeutEmail().welcomeGreetings(newTherapeut, req.body.password)
     } catch (err) {
         if (err) console.log(err)
     }
@@ -206,13 +206,30 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 });
 
 exports.getLogedInUser = catchAsync(async (req, res, next) => {
-    const user = await User.findOne({ _id: req.user._id })
+    const user = await User.findOne({ _id: req.user._id }).select('+policiesAccepted')
         // .populate('reviews', 'rating review pacient -therapeut')
         .populate('therapies', 'therapeut appointedAt -pacientId')
 
     if (!user) {
         return next(new AppError('Ihr Konto wurde nicht gefunden.', 404))
     }
+
+    res.status(200).json({
+        message: 'success',
+        user
+    })
+})
+
+exports.acceptPrivacyPolicy = catchAsync(async (req, res, next) => {
+    const user = await User.findById(req.user._id).select('+policiesAccepted')
+
+    if (!user) {
+        return next(new AppError('User nicht gefunden...', 404))
+    }
+
+    user.policiesAccepted = true
+
+    await user.save({ validateBeforeSave: false })
 
     res.status(200).json({
         message: 'success',

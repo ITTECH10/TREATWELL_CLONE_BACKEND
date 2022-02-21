@@ -24,6 +24,9 @@ router.route('/logout')
 // BELLOW ROUTES ARE PROTECTED
 router.use(authController.protect)
 
+router.route('/accept-policies')
+    .get(authController.acceptPrivacyPolicy)
+
 router.route('/me')
     .get(authController.getLogedInUser)
 

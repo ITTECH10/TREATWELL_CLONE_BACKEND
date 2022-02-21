@@ -95,6 +95,11 @@ const userSchema = new mongoose.Schema({
     },
     availableBookingDates: {
         type: Array
+    },
+    policiesAccepted: {
+        type: Boolean,
+        default: false,
+        select: false
     }
 }, {
     toJSON: { virtuals: true },

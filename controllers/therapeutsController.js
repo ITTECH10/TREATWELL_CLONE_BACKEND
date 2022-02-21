@@ -100,7 +100,7 @@ exports.createTherapeut = catchAsync(async (req, res, next) => {
     const URL = `${req.protocol}://localhost:3000/authenticate/therapeuts`;
 
     try {
-        // await new TherapeutEmail().welcomeGreetings(newTherapeut, URL, req.body.password)
+        await new TherapeutEmail().welcomeGreetings(newTherapeut, URL, req.body.password)
     } catch (err) {
         if (err) console.log(err)
     }
