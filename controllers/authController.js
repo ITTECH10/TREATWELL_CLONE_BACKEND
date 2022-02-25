@@ -26,7 +26,6 @@ exports.createTherapeut = catchAsync(async (req, res, next) => {
         lastName: req.body.lastName,
         role: 'therapeut',
         age: req.body.age,
-        availableBookingDates: req.body.availableBookingDates,
         email: req.body.email,
         password: req.body.password,
         confirmPassword: req.body.confirmPassword,
