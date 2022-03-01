@@ -5,10 +5,10 @@ exports.uploadFiles = req => {
     const filename = `user-${req.user._id}-${new Date().getTime() * 1000}.${ext}`;
 
     if (!req.files.photo.mimetype.startsWith('image')) {
-        return next(new AppError('Samo slike su dozvoljene.', 400))
+        return next(new AppError('Nur Bilder sind erlaubt.', 400))
 
     } else if (req.files.photo.mimetype !== 'image/jpeg' && req.files.photo.mimetype !== 'image/png') {
-        return next(new AppError('Molimo vas odaberite sliku sa JPG ili PNG formatom.', 400));
+        return next(new AppError('Bitte wählen Sie Bilder im JPG- oder PNG-Format.', 400));
     }
 
     let temp = req.files.photo.tempFilePath.split('/')
@@ -29,10 +29,10 @@ exports.uploadMultipleFiles = (file, req) => {
     const filename = `user-${req.user._id}-${new Date().getTime() * 1000}.${ext}`;
 
     if (!file.mimetype.startsWith('image')) {
-        return next(new AppError('Samo slike su dozvoljene.', 400))
+        return next(new AppError('Nur Bilder sind erlaubt.', 400))
 
     } else if (file.mimetype !== 'image/jpeg' && file.mimetype !== 'image/png') {
-        return next(new AppError('Molimo vas odaberite sliku sa JPG ili PNG formatom.', 400));
+        return next(new AppError('Bitte wählen Sie Bilder im JPG- oder PNG-Format.', 400));
     }
 
     let temp = file.tempFilePath.split('/')

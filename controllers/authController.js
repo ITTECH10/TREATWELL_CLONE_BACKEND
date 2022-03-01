@@ -61,12 +61,12 @@ exports.login = catchAsync(async (req, res, next) => {
     const { email, password } = req.body
 
     if (!email || !password) {
-        return next(new AppError('Molimo vas unesite e-mail i password.', 400))
+        return next(new AppError('Bitte E-Mail und Passwort angeben.', 400))
     }
 
     const user = await User.findOne({ email }).select('+password')
     if (!user || !await user.comparePasswords(password, user.password)) {
-        return next(new AppError('Netačan e-mail ili lozinka.', 401))
+        return next(new AppError('Falsche E-Mail oder falsches Passwort.', 401))
     }
 
     createSendToken(user, 200, res)
@@ -110,14 +110,14 @@ exports.protect = catchAsync(async (req, res, next) => {
     }
 
     if (!token) {
-        return next(new AppError('Invalid token', 401))
+        return next(new AppError('Kein Token gefunden. Bitte versuchen Sie, sich erneut anzumelden oder kontaktieren Sie das Entwicklerteam.', 401))
     }
 
     const decodedToken = await promisify(jwt.verify)(token, process.env.JWT_SECRET)
     const currentUser = await User.findById(decodedToken.id)
 
     if (!currentUser) {
-        return next(new AppError('Benutzer, der diesem Token zugeordnet ist, existiert nicht.', 404))
+        return next(new AppError('Der Besitzer dieses Tokens existiert nicht.', 404))
     }
 
     req.user = currentUser
@@ -140,18 +140,17 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     const user = await User.findOne({ email: req.body.email })
 
     if (!user) {
-        return next(new AppError('Dieser E-Mail-Adresse ist kein Patient zugeordnet.', 404))
+        return next(new AppError('Der Benutzer mit der angegebenen E-Mail existiert nicht.', 404))
     }
-
-    const resetToken = user.createPasswordResetToken()
-    // const resetURL = `${req.protocol}://localhost:3000/resetPassword/${resetToken}`;
-    const resetURL = `https://treatwell-clone.vercel.app/resetPassword/${resetToken}`
-
-    await user.save({ validateBeforeSave: false })
 
     try {
         // SEND EMAIL HERE
-        // await new PacientEmail().resetPassword(user, resetURL)
+        const resetToken = user.createPasswordResetToken()
+        const resetURL = `${req.protocol}://localhost:3000/resetPassword/${resetToken}`;
+        // const resetURL = `https://treatwell-clone.vercel.app/resetPassword/${resetToken}`
+
+        await new PacientEmail().resetPassword(user, resetURL)
+        await user.save({ validateBeforeSave: false })
 
         res.status(200).json({
             message: 'success'
@@ -162,7 +161,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
         user.passwordResetTokenExpiresIn = undefined;
         await user.save({ validateBeforeSave: false })
 
-        return next(new AppError('Beim Senden der E-Mail ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.', 500))
+        return next(new AppError('Beim Senden der E-Mail ist etwas schief gegangen. Bitte versuchen Sie es erneut.', 500))
     }
 })
 
@@ -175,17 +174,26 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     });
 
     if (!user) {
-        return next(new AppError('Das Token ist abgelaufen oder ungültig.', 400));
+        return next(new AppError('Ihr Token zum Zurücksetzen des Kennworts ist ungültig, oder es ist abgelaufen.', 400));
     }
 
-    user.password = req.body.password;
-    user.confirmPassword = req.body.confirmPassword;
-    user.passwordResetToken = undefined;
-    user.passwordResetTokenExpiresIn = undefined;
+    try {
+        user.password = req.body.password;
+        user.confirmPassword = req.body.confirmPassword;
+        user.passwordResetToken = undefined;
+        user.passwordResetTokenExpiresIn = undefined;
 
-    await user.save({ validateBeforeSave: false });
+        await user.save({ validateBeforeSave: false });
+        createSendToken(user, 200, res)
+    } catch (e) {
+        if (e) {
+            console.log(e)
+            user.passwordResetToken = undefined;
+            user.passwordResetTokenExpiresIn = undefined;
+            await user.save({ validateBeforeSave: false });
+        }
+    }
 
-    createSendToken(user, 200, res)
 });
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
@@ -194,7 +202,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 
     // 2) Check if POSTed current password is correct
     if (!(await employee.comparePasswords(req.body.currentPassword, employee.password))) {
-        return next(new AppError('Vaša trenutna lozinka je netačna.', 401));
+        return next(new AppError('Ihr aktuelles Passwort ist falsch.', 401));
     }
 
     // 3) If so, update password
@@ -224,7 +232,7 @@ exports.acceptPrivacyPolicy = catchAsync(async (req, res, next) => {
     const user = await User.findById(req.user._id).select('+policiesAccepted')
 
     if (!user) {
-        return next(new AppError('User nicht gefunden...', 404))
+        return next(new AppError('Benutzer nicht gefunden.', 404))
     }
 
     user.policiesAccepted = true

@@ -4,10 +4,12 @@ const crypto = require('crypto')
 
 const userSchema = new mongoose.Schema({
     firstName: {
-        type: String
+        type: String,
+        required: [true, 'Bitte geben Sie Ihren Vornamen an']
     },
     lastName: {
-        type: String
+        type: String,
+        required: [true, 'Bitte geben Sie Ihren Nachname an']
     },
     email: {
         type: String,

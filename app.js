@@ -10,8 +10,10 @@ const therapeutRouter = require('./routers/therapeutRouter')
 const pacientRouter = require('./routers/pacientRouter')
 const reviewRouter = require('./routers/reviewRouter')
 const userRouter = require('./routers/userRouter')
+const globalErrorHandler = require('./controllers/errorController')
 
 const origin = process.env.NODE_ENV === 'production' ? 'https://treatwell-clone.vercel.app' : 'http://localhost:3000'
+// const origin = 'http://localhost:3000'
 
 // CORS
 app.use(cors({ credentials: true, origin }))
@@ -33,7 +35,10 @@ app.use('/api/v1/users', userRouter)
 app.use('/api/v1/reviews', reviewRouter)
 
 app.all('*', (req, res, next) => {
-    next(new AppError(`The requested url ${req.originalUrl} could not be found.`, 404))
+    next(new AppError(`Die angeforderte URL ${req.originalUrl} konnte nicht gefunden werden.`, 404))
 })
+
+// GLOBAL ERROR HANDLING
+app.use(globalErrorHandler)
 
 module.exports = app
