@@ -27,6 +27,9 @@ router.use(authController.protect)
 router.route('/accept-policies')
     .get(authController.acceptPrivacyPolicy)
 
+router.route('/contact-therapeut-map/:therapeutId')
+    .post(userController.contactTherapeutFromPopupMap)
+
 router.route('/me')
     .get(authController.getLogedInUser)
 

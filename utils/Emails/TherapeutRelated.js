@@ -20,6 +20,15 @@ class TherapeutEmail extends EmailNotifications {
 
         await super.sendToTherapeut(therapeut, subject, body)
     }
+
+    async contactTherapeutFromPopupMap(therapeut, req) {
+        const subject = "Rückruf erwünscht"
+        const body = `Hallo ${therapeut.firstName} ${therapeut.lastName}
+        Mein name is ${req.body.name} und mein telefonnummer ist ${req.body.phone}
+        Ich kontaktiere Sie aus folgenden Gründen ${req.body.description}
+        `
+        await super.sendToTherapeut(therapeut, subject, body)
+    }
 }
 
 module.exports = TherapeutEmail
