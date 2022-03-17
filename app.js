@@ -27,13 +27,13 @@ app.use(cors({ credentials: true, origin }))
 app.use(helmet())
 
 // Limit requests from same API
-const limiter = rateLimit({
-    max: 100,
-    windowMs: 60 * 60 * 1000,
-    message: 'Zu viele Anfragen von dieser IP-Adresse. Bitte versuchen Sie es in einer Stunde erneut!'
-});
+// const limiter = rateLimit({
+//     max: 100,
+//     windowMs: 60 * 60 * 1000,
+//     message: 'Zu viele Anfragen von dieser IP-Adresse. Bitte versuchen Sie es in einer Stunde erneut!'
+// });
 
-app.use('/api', limiter)
+// app.use('/api', limiter)
 
 // Parsers
 app.use(cookieParser())
