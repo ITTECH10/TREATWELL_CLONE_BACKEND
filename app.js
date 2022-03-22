@@ -17,8 +17,8 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const compression = require('compression')
 
-// const origin = process.env.NODE_ENV === 'production' ? 'https://treatwell-clone.vercel.app' : 'http://localhost:3000'
-const origin = process.env.NODE_ENV === 'production' ? 'https://gesundo24.de' : 'http://localhost:3000'
+const origin = process.env.NODE_ENV === 'production' ? 'https://treatwell-clone.vercel.app' : 'http://localhost:3000'
+// const origin = process.env.NODE_ENV === 'production' ? 'https://gesundo24.de' : 'http://localhost:3000'
 // const origin = 'http://localhost:3000'
 
 // CORS
