@@ -96,8 +96,9 @@ exports.createTherapeut = catchAsync(async (req, res, next) => {
         }
     })
 
-    // const URL = `https://treatwell-clone.vercel.app/resetPassword/${resetToken}`
-    const URL = `${req.protocol}://localhost:3000/authenticate/therapeuts`;
+    // const URL = `https://treatwell-clone.vercel.app/authenticate/therapeuts`
+    const URL = `https://gesundo24.de/authenticate/therapeuts`
+    // const URL = `${req.protocol}://localhost:3000/authenticate/therapeuts`;
 
     try {
         await new TherapeutEmail().welcomeGreetings(newTherapeut, URL, req.body.password)

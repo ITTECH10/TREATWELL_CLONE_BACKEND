@@ -147,8 +147,9 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     try {
         // SEND EMAIL HERE
         const resetToken = user.createPasswordResetToken()
-        const resetURL = `${req.protocol}://localhost:3000/resetPassword/${resetToken}`;
+        // const resetURL = `${req.protocol}://localhost:3000/resetPassword/${resetToken}`;
         // const resetURL = `https://treatwell-clone.vercel.app/resetPassword/${resetToken}`
+        const resetURL = `https://gesundo24.de/resetPassword/${resetToken}`
 
         await new PacientEmail().resetPassword(user, resetURL)
         await user.save({ validateBeforeSave: false })
