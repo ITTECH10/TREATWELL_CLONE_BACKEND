@@ -13,7 +13,7 @@ const PacientEmail = require('../utils/Emails/PacientRelated')
 exports.checkForFiles = catchAsync(async (req, res, next) => {
     if (req.files) {
         if (req.files.photo) {
-            uploadFiles(req)
+            uploadFiles(req, next)
 
             await cloudinary.uploader.upload(req.files.joinedTemp, (err, file) => {
                 if (file) {
@@ -28,7 +28,7 @@ exports.checkForFiles = catchAsync(async (req, res, next) => {
         if (req.files.multiplePhotos) {
             const bulk = []
             for (let key of req.files.multiplePhotos) {
-                uploadMultipleFiles(key, req)
+                uploadMultipleFiles(key, req, next)
 
                 await cloudinary.uploader.upload(req.files.joinedTemp, (err, file) => {
                     if (file) {
@@ -142,7 +142,7 @@ exports.getTherapeutsWithin = catchAsync(async (req, res, next) => {
 
 exports.updateTherapeut = catchAsync(async (req, res, next) => {
     const therapeut = await User.findOne({ _id: req.user._id })
-
+    
     if (!therapeut) {
         return next(new AppError('Kein therapeut gefunden', 404))
     }
@@ -153,7 +153,7 @@ exports.updateTherapeut = catchAsync(async (req, res, next) => {
         if (req.files) {
             // Check for single file
             if (req.files.photo) {
-                const publicId = therapeut.image.split('/')[7].split('.')[0]
+                const publicId = therapeut.image && therapeut.image.split('/')[7].split('.')[0]
                 therapeut.image = req.files.image || therapeut.image
 
                 await cloudinary.api.delete_resources(publicId, { invalidate: true },
@@ -166,9 +166,8 @@ exports.updateTherapeut = catchAsync(async (req, res, next) => {
 
             // Check for multiple files
             if (req.files.multiplePhotos) {
-                therapeut.images.forEach(async image => {
+               therapeut.images && therapeut.images.forEach(async image => {
                     const publicId = image.split('/')[7].split('.')[0]
-                    therapeut.images = req.files.bulk || therapeut.images
 
                     await cloudinary.api.delete_resources(publicId, { invalidate: true },
                         function (error, result) {
@@ -177,6 +176,8 @@ exports.updateTherapeut = catchAsync(async (req, res, next) => {
                             }
                         });
                 })
+
+                therapeut.images = req.files.bulk || therapeut.images
             }
         }
 

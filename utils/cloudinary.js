@@ -1,6 +1,6 @@
 const AppError = require('./appError');
 
-exports.uploadFiles = req => {
+exports.uploadFiles = (req, next) => {
     const ext = req.files.photo.mimetype.split('/')[1];
     const filename = `user-${req.user._id}-${new Date().getTime() * 1000}.${ext}`;
 
@@ -24,7 +24,7 @@ exports.uploadFiles = req => {
     req.files.joinedTemp = joinedTemp + filename
 }
 
-exports.uploadMultipleFiles = (file, req) => {
+exports.uploadMultipleFiles = (file, req, next) => {
     const ext = file.mimetype.split('/')[1];
     const filename = `user-${req.user._id}-${new Date().getTime() * 1000}.${ext}`;
 
