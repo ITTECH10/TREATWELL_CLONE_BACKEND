@@ -20,7 +20,7 @@ router.route('/update')
     .put(
         authController.protect,
         therapeutsController.checkForFiles,
-        authController.restrictTo('therapeut'),
+        authController.restrictTo('therapeut', 'admin'),
         therapeutsController.updateTherapeut
     )
 
