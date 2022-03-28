@@ -142,7 +142,7 @@ exports.getTherapeutsWithin = catchAsync(async (req, res, next) => {
 
 exports.updateTherapeut = catchAsync(async (req, res, next) => {
     const therapeut = await User.findOne({ _id: req.user._id })
-    
+
     if (!therapeut) {
         return next(new AppError('Kein therapeut gefunden', 404))
     }
@@ -166,7 +166,7 @@ exports.updateTherapeut = catchAsync(async (req, res, next) => {
 
             // Check for multiple files
             if (req.files.multiplePhotos) {
-               therapeut.images && therapeut.images.forEach(async image => {
+                therapeut.images && therapeut.images.forEach(async image => {
                     const publicId = image.split('/')[7].split('.')[0]
 
                     await cloudinary.api.delete_resources(publicId, { invalidate: true },
@@ -232,7 +232,7 @@ exports.updateTherapeutInfo = catchAsync(async (req, res, next) => {
 
 exports.becomePartner = catchAsync(async (req, res, next) => {
     try {
-        // await new ClientEmail().becomePartner(req.body.therapeut)
+        await new ClientEmail().becomePartner(req.body.therapeut)
         res.status(200).json({
             message: 'success'
         })
