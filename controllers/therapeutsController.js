@@ -148,7 +148,10 @@ exports.updateTherapeut = catchAsync(async (req, res, next) => {
     }
 
     try {
-        therapeut.availableBookingDates = req.body.availableBookingDates
+        therapeut.availableBookingDates = [
+            ...therapeut.availableBookingDates,
+            ...req.body.availableBookingDates
+        ]
 
         if (req.files) {
             // Check for single file

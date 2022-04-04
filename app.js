@@ -16,6 +16,7 @@ const rateLimit = require('express-rate-limit')
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const compression = require('compression')
+const CroneJobs = require('./services/CroneJobs')
 
 // const origin = process.env.NODE_ENV === 'production' ? 'https://treatwell-clone.vercel.app' : 'http://localhost:3000'
 // const origin = process.env.NODE_ENV === 'production' ? 'https://gesundo24.de' : 'http://localhost:3000'
@@ -27,6 +28,9 @@ app.use(cors({ credentials: true, origin }))
 
 // Set security HTTP headers
 app.use(helmet())
+
+// Initialize crone jobs
+CroneJobs()
 
 // Limit requests from same API
 // const limiter = rateLimit({
