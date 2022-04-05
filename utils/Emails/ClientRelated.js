@@ -22,9 +22,9 @@ class ClientEmail extends EmailNotifications {
     }
 
     async pacientRegistered(pacient) {
-        const subject = 'Neuer Pacient'
+        const subject = 'Neuer Patient'
         const body = `
-        Hallo, ein neuer Pacient ist auf gesundo24.de registriert!
+        Hallo, ein neuer Patient ist auf gesundo24.de registriert!
         Hier sind die Details:
         Name: ${pacient.firstName} ${pacient.lastName}
         E-mail: ${pacient.email}
