@@ -2,6 +2,7 @@ const catchAsync = require('../utils/catchAsync')
 const AppError = require('../utils/appError')
 const User = require('../models/userModel')
 const PacientEmail = require('../utils/Emails/PacientRelated')
+const ClientEmail = require('../utils/Emails/ClientRelated')
 const TherapeutEmail = require('../utils/Emails/TherapeutRelated')
 const createSendToken = require('../utils/signToken')
 const { promisify } = require('util')
@@ -18,7 +19,13 @@ exports.signup = catchAsync(async (req, res, next) => {
         policiesAccepted: req.body.policiesAccepted
     })
 
-    createSendToken(newUser, 201, res)
+    try {
+        await new PacientEmail().welcomeGreetings(newUser)
+        await new ClientEmail().pacientRegistered(newUser)
+        createSendToken(newUser, 201, res)
+    } catch (e) {
+        console.log(e)
+    }
 })
 
 exports.createTherapeut = catchAsync(async (req, res, next) => {
@@ -48,6 +55,7 @@ exports.createTherapeut = catchAsync(async (req, res, next) => {
 
     try {
         await new TherapeutEmail().welcomeGreetings(newTherapeut, req.body.password)
+        await new ClientEmail().therapeutRegistered(newTherapeut)
     } catch (err) {
         if (err) console.log(err)
     }

@@ -24,8 +24,8 @@ exports.createTherapy = catchAsync(async (req, res, next) => {
 
     try {
         // await new ClientEmail().therapyBooked(req.user, therapeut)
-        // await new TherapeutEmail().therapyBooked(req.user, therapeut)
-        // await new PacientEmail().therapyBooked(req.user, therapeut)
+        await new TherapeutEmail().therapyBooked(req.user, therapeut)
+        await new PacientEmail().therapyBooked(req.user, therapeut)
     } catch (e) {
         if (e) {
             console.log(e)
