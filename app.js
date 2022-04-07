@@ -24,7 +24,7 @@ const CroneJobs = require('./services/CroneJobs')
 // const origin = 'http://localhost:3000'
 
 // CORS
-app.use(cors({ credentials: true, origin: '*' }))
+app.use(cors({ credentials: true }))
 
 // Set security HTTP headers
 app.use(helmet())
