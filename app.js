@@ -23,8 +23,10 @@ const CroneJobs = require('./services/CroneJobs')
 // const origin = process.env.NODE_ENV === 'production' ? 'https://gesundo24.de' : 'http://localhost:3000'
 // const origin = 'http://localhost:3000'
 
+const origin = ['https://gesundo24.de', 'www.gesundow24.de']
+
 // CORS
-app.use(cors({ credentials: true }))
+app.use(cors({ credentials: true, origin }))
 
 // Set security HTTP headers
 app.use(helmet())
